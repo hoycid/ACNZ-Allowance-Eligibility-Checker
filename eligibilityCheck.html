@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Travel - Meal Allowance Eligibility Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h3 {
+            margin-bottom: 20px;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f5fc 0%, #e2e9f4 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .time-select {
+            display: flex;
+            flex-wrap: wrap;     
+            align-items: center;
+            gap: 15px;             
+        }
+
+        .time-select p {
+            margin: 0; 
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: rgba(5, 78, 90);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .logo {
+            background: rgba(20, 185, 123);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon {
+            font-size: 2.8rem;
+            color: white;
+        }
+        
+        .header-text h1 {
+            font-size: 2.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.92;
+            max-width: 700px;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .radio {
+            margin: 0.7rem;
+            padding: 0;
+            width: 10px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 400px;
+            padding: 35px;
+            background: #F3F6F7;
+            border-right: 1px solid #eaeef5;
+        }
+        
+        .results-section {
+            flex: 1;
+            min-width: 400px;
+            padding: 35px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #054E5A;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeef5;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title i {
+            font-size: 1.4rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #c1c3c5;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group label i {
+            color: #054E5A;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #054E5A;
+            box-shadow: 0 0 0 3px rgba(0, 84, 164, 0.2);
+        }
+        
+        .meals-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .meal-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #A9A9A9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #8c8c8c;
+        }
+        
+        .meal-option:hover {
+            background: #F7F7F7;
+            color: #054E5A;
+            border-color: #054E5A;
+        }
+        
+        .meal-option.selected {
+            color: #054E5A;
+            border-color: #054E5A;
+        }
+        
+        .meal-option input {
+            display: none;
+        }
+        
+        .meal-option .checkmark {
+            width: 22px;
+            height: 22px;
+            border: 2px solid;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .meal-option.selected .checkmark {
+            color: #054E5A;
+            border-color: #054E5A;
+        }
+        
+        .meal-option.selected .checkmark:after {
+            content: "✓";
+            color: #054E5A;
+            border-color: #054E5A;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        button {
+            background: rgba(5, 78, 90);
+            color: white;
+            border: none;
+            padding: 17px 30px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 84, 164, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 84, 164, 0.35);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .eligibility-criteria {
+            background: #F7F7F7;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #C8C9CB;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .criteria-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #C8C9CB;
+        }
+        
+        .criteria-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .criteria-label {
+            flex: 1;
+            font-weight: 500;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 15px;
+        }
+        
+        .criteria-status {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        
+        .eligible {
+            color: #38a169;
+        }
+        
+        .not-eligible {
+            color: #e53e3e;
+        }
+        
+        .allowance-breakdown {
+            background: linear-gradient(135deg, #e6f7ff 0%, #d6eeff 100%);
+            border-radius: 10px;
+            padding: 30px;
+            flex: 1;
+            border: 1px solid #bee3f8;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .allowance-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #cae6f5;
+            font-size: 1.1rem;
+        }
+        
+        .allowance-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .total-allowance {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 3px solid #054E5A;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #054E5A;
+        }
+        
+        .policy-summary {
+            margin-top: 30px;
+            padding: 25px;
+            background: #F7F7F7;
+            border-radius: 10px;
+            border-left: 5px solid #054E5A;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .policy-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #054E5A;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .policy-points {
+            padding-left: 25px;
+        }
+        
+        .policy-points li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            color: #054E5A;
+        }
+        
+        .country-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #eaeef5;
+            }
+            
+            .country-list {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Business Travel - Meal Allowance Eligibility Checker</h1>
+                    <div class="subtitle">Check your Meal Allowance Eligibility by duration and meals provided</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Travel Details</h2>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-thumbs-up"></i> Is travel approved by LM?</label>
+                    
+                    <label for="approval-yes">
+                        <input class="radio" type="radio" name="approval" id="approval-yes" value="✓ Approved" checked> Yes
+                    </label>
+                    
+                    <label for="approval-no">
+                        <input class="radio" type="radio" name="approval" id="approval-no" value="✗ Not approved"> No
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa fa-map"></i> Are you traveling outside usual work location?</label>
+                    <label for="outside-yes">
+                        <input class="radio" type="radio" name="outside" id="outside-yes" value="✓ Outside work location" checked>Yes
+                    </label>
+                    <label for="outside-no">
+                        <input class="radio" type="radio" name="outside" id="outside-no" value="✗ Within work location">No
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-plane-departure"></i> Travel Start and End Time</label>
+                    <div class="time-select" >
+                        <p>From</p>
+                        <input type="time" id="startTime">
+                        <p>To</p>
+                        <input type="time" id="endTime">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-utensil-spoon"></i> Meals Provided by Third Parties</label>
+                    <div class="meals-group">
+                        <div class="meal-option" data-meal="breakfast">
+                            <div class="checkmark"></div>
+                            <div>Breakfast</div>
+                            <input type="checkbox" id="breakfastProvided" value="breakfast">
+                        </div>
+                        <div class="meal-option" data-meal="lunch">
+                            <div class="checkmark"></div>
+                            <div>Lunch</div>
+                            <input type="checkbox" id="lunchProvided" value="lunch">
+                        </div>
+                        <div class="meal-option" data-meal="dinner">
+                            <div class="checkmark"></div>
+                            <div>Dinner</div>
+                            <input type="checkbox" id="dinnerProvided" value="dinner">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-question-circle"></i> Have you claimed this allowance?</label>
+                    <label for="claim-yes">
+                        <input class="radio" type="radio" name="claim" id="claim-yes" value="✓ Unclaimed">Yes
+                    </label>
+                    <label for="claim-no">
+                        <input class="radio" type="radio" name="claim" id="claim-no" value="✗ Claimed" checked>No
+                    </label>
+                </div>
+
+                <button id="calculateBtn">
+                    Check Allowance Eligibility
+                </button>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Results</h2>
+                
+                <div class="results-container">
+                    <div class="eligibility-criteria">
+                        <h3>Eligibility Criterias</h3>
+
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fa fa-check-circle"></i> LM Approval</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fas fa-map-marker"></i> Destination</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fas fa-clock"></i> Duration</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fas fa-utensils"></i> Eligible Meals</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fas fa-hotel"></i> Third-Party Meal Provisions</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fa fa-hourglass-3"></i> Claim Status</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+                        <div class="criteria-item">
+                            <div class="criteria-label">Result: </div>
+                            <div class="criteria-status">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-summary">
+                    <div class="policy-title"><i class="fas fa-info-circle"></i> Policy Summary</div>
+                    <ul class="policy-points">
+                        <li>Breakfast eligible if traveling at or before 7:00 AM</li>
+                        <li>Dinner eligible if traveling at or after 7:00 PM</li>
+                        <li>Deduct for meals provided by hotels, airlines or events</li>
+                        <li>Allowances granted per 8-hour block of travel/stay</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calculateBtn = document.getElementById('calculateBtn');
+    const mealOptions = document.querySelectorAll('.meal-option');
+    
+    // Set default times
+    document.getElementById('startTime').value = "06:00"; // 6 AM
+    document.getElementById('endTime').value = "18:00";   // 6 PM
+    
+    // Meal selection
+    mealOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+        });
+    });
+    
+    // Calculate button click
+    calculateBtn.addEventListener('click', checkEligibility);
+    
+    function parseTime(timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        return hours + minutes / 60;
+    }
+    
+    function checkEligibility() {
+        // Get input times
+        const startTimeStr = document.getElementById('startTime').value;
+        const endTimeStr = document.getElementById('endTime').value;
+        const startHour = parseTime(startTimeStr);
+        const endHour = parseTime(endTimeStr);
+        
+        if (isNaN(startHour) || isNaN(endHour) || startHour >= endHour) {
+            alert("Please enter valid start and end times. End time must be after start time.");
+            return;
+        }
+        
+        const durationHours = endHour - startHour;
+
+
+        //Get answers
+        const isApproved = document.getElementById('approval-yes').checked;
+        const isOutside = document.getElementById('outside-yes').checked;
+        const isNotClaimed = document.getElementById('claim-no').checked;
+
+        const Approved = document.getElementById('approval-yes').checked ? document.getElementById('approval-yes').value : document.getElementById('approval-no').value;
+        const Outside = document.getElementById('outside-yes').checked ? document.getElementById('outside-yes').value : document.getElementById('outside-no').value;
+        const NotClaimed = document.getElementById('claim-yes').checked ? document.getElementById('claim-no').value : document.getElementById('claim-yes').value;
+        
+        // Get selected meals
+        const breakfastProvided = document.getElementById('breakfastProvided').checked;
+        const lunchProvided = document.getElementById('lunchProvided').checked;
+        const dinnerProvided = document.getElementById('dinnerProvided').checked;
+        
+        // Determine meal count by duration
+        let mealCount = 0;
+        if (durationHours < 2) mealCount = 0;
+        else if (durationHours < 8) mealCount = 1;
+        else if (durationHours <= 16 && startHour >= 7 && endHour <= 13) mealCount = 2;
+        else mealCount = 3;
+        const durationStatus = mealCount > 1 ? `✓ ${mealCount} meal(s) (${durationHours.toFixed(1)} hours)` : `✗ ${mealCount} meal (${durationHours.toFixed(1)} hours)`;
+        
+        // Meal eligibility
+        const breakfastEligible = startHour <= 7 && durationHours >= 8;
+        const lunchEligible = startHour <= 7 && endHour >= 13 && durationHours >= 8;
+        const dinnerEligible = endHour >= 19 && durationHours >= 8;
+        
+
+        let mealtimeStatus = [];
+        if (breakfastEligible && !breakfastProvided) mealtimeStatus.push("Breakfast");
+        if (lunchEligible && !lunchProvided) mealtimeStatus.push("Lunch");
+        if (dinnerEligible && !dinnerProvided) mealtimeStatus.push("Dinner");
+        mealtimeStatus = mealtimeStatus.length ? mealtimeStatus.join(", ") : "✗ None";
+
+        let mealProvisionStatus = [];
+        if (breakfastProvided) mealProvisionStatus.push("⚠ Breakfast");
+        if (lunchProvided) mealProvisionStatus.push("⚠ Lunch");
+        if (dinnerProvided) mealProvisionStatus.push("⚠ Dinner");
+        mealProvisionStatus = mealProvisionStatus.length ? mealProvisionStatus.join(", ") : "✓ None";
+
+
+        
+        const eligibility = durationHours >= 8 && isApproved && isOutside && isNotClaimed && mealCount > 0 && mealtimeStatus !== "✗ None" ? true : false;
+
+        // Update results
+        const criteria = document.querySelectorAll('.criteria-status');
+        criteria[0].textContent = Approved;
+        criteria[0].className = isApproved ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[1].textContent = Outside;
+        criteria[1].className = isOutside ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[2].textContent = durationStatus;
+        criteria[2].className = durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[3].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
+        criteria[3].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+
+        criteria[4].textContent = mealProvisionStatus;
+        criteria[4].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+
+        criteria[5].textContent = NotClaimed;
+        criteria[5].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[6].textContent = eligibility ? "✓ Eligible" : "✗ Not Eligible";
+        criteria[6].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
+    }
+    
+    // Trigger initial calculation
+    checkEligibility();
+});
+</script>
+
+</body>
+</html>
