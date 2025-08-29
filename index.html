@@ -402,7 +402,7 @@
                 </div>
                 <div class="header-text">
                     <h1>Business Travel - Meal Allowance Eligibility Checker</h1>
-                    <div class="subtitle">Check your Meal Allowance Eligibility according to the 6-point rule/div>
+                    <div class="subtitle">This tool is designed to help check eligibility for individual meal allowances (breakfast, lunch, and dinner) on a per-day basis. It does not calculate or verify the total meal allowance for an entire travel period. For trips spanning multiple days, please enter each day separately to check eligibility for that day’s meals./div>
                 </div>
             </div>
         </header>
@@ -412,7 +412,7 @@
                 <h2 class="section-title"><i class="fas fa-calculator"></i> Travel Details</h2>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-thumbs-up"></i> Is travel approved by LM?</label>
+                    <label><i class="fas fa-thumbs-up"></i> Is this travel approved by your Line Manager or assigned by a Planner (e.g., for Field Service Engineers)</label>
                     
                     <label for="approval-yes">
                         <input class="radio" type="radio" name="approval" id="approval-yes" value="✓ Approved" checked> Yes
@@ -465,7 +465,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-question-circle"></i> Have you claimed this allowance?</label>
+                    <label><i class="fas fa-question-circle"></i> Have you claimed this in a previous Concur submission?</label>
                     <label for="claim-yes">
                         <input class="radio" type="radio" name="claim" id="claim-yes" value="✓ Unclaimed">Yes
                     </label>
@@ -513,7 +513,7 @@
                             <div class="criteria-status">-</div>
                         </div>
                         <div class="criteria-item">
-                            <div class="criteria-label">Result: </div>
+                            <div class="criteria-label"><h2>Result:<h2></div>
                             <div class="criteria-status">-</div>
                         </div>
                     </div>
@@ -637,7 +637,9 @@ document.addEventListener('DOMContentLoaded', function() {
         criteria[5].textContent = NotClaimed;
         criteria[5].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
-        criteria[6].textContent = eligibility ? "✓ Eligible" : "✗ Not Eligible";
+        criteria[6].innerHTML = eligibility 
+            ? "<h2>✓ Eligible</h2>" 
+            : "<h2>✗ Not Eligible</h2>";
         criteria[6].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
     }
     
