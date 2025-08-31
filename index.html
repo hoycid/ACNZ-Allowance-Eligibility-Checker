@@ -402,7 +402,7 @@
                 </div>
                 <div class="header-text">
                     <h1>Business Travel - Meal Allowance Eligibility Checker</h1>
-                    <div class="subtitle">This tool is designed to help check eligibility for individual meal allowances (breakfast, lunch, and dinner) on a per-day basis. It does not calculate or verify the total meal allowance for an entire travel period. For trips spanning multiple days, please enter each day separately to check eligibility for that day’s meals.</div>
+                    <div class="subtitle">This tool is designed to help check eligibility for individual meal allowances (breakfast, lunch, and dinner) on a per-day basis. It does not calculate or verify the total meal allowance for an entire travel period. For trips spanning multiple days, please enter each day separately to check eligibility for that day’s meals.
                 </div>
             </div>
         </header>
@@ -441,6 +441,18 @@
                         <p>To</p>
                         <input type="time" id="endTime">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Is this day the start or end of your trip?</label>
+                    
+                    <label for="first-last-yes">
+                        <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day" checked> Yes
+                    </label>
+                    
+                    <label for="first-last-no">
+                        <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between"> No
+                    </label>
                 </div>
                 
                 <div class="form-group">
@@ -500,6 +512,12 @@
                             <div class="criteria-label"><i class="fas fa-clock"></i> Duration</div>
                             <div class="criteria-status">-</div>
                         </div>
+
+                        <div class="criteria-item">
+                            <div class="criteria-label"><i class="fas fa-calendar"></i> First/Last day of trip</div>
+                            <div class="criteria-status">-</div>
+                        </div>
+
                         <div class="criteria-item">
                             <div class="criteria-label"><i class="fas fa-utensils"></i> Eligible Meals</div>
                             <div class="criteria-status">-</div>
@@ -577,10 +595,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const isApproved = document.getElementById('approval-yes').checked;
         const isOutside = document.getElementById('outside-yes').checked;
         const isNotClaimed = document.getElementById('claim-no').checked;
+        const isFirstLastDay = document.getElementById('first-last-yes').checked;
 
         const Approved = document.getElementById('approval-yes').checked ? document.getElementById('approval-yes').value : document.getElementById('approval-no').value;
         const Outside = document.getElementById('outside-yes').checked ? document.getElementById('outside-yes').value : document.getElementById('outside-no').value;
         const NotClaimed = document.getElementById('claim-yes').checked ? document.getElementById('claim-no').value : document.getElementById('claim-yes').value;
+        const firstLastDay = document.getElementById('first-last-yes').checked ? document.getElementById('first-last-yes').value : document.getElementById('first-last-no').value;
         
         // Get selected meals
         const breakfastProvided = document.getElementById('breakfastProvided').checked;
@@ -593,12 +613,12 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (durationHours < 8) mealCount = 1;
         else if (durationHours <= 16 && startHour >= 7 && endHour <= 13) mealCount = 2;
         else mealCount = 3;
-        const durationStatus = mealCount > 1 ? `✓ ${mealCount} meal(s) (${durationHours.toFixed(1)} hours)` : `✗ ${mealCount} meal (${durationHours.toFixed(1)} hours)`;
+        const durationStatus = mealCount > 0 ? `✓ ${mealCount} meal(s) (${durationHours.toFixed(1)} hours)` : `✗ ${mealCount} meal (${durationHours.toFixed(1)} hours)`;
         
         // Meal eligibility
-        const breakfastEligible = startHour <= 7 && durationHours >= 8;
-        const lunchEligible = startHour <= 7 && endHour >= 13 && durationHours >= 8;
-        const dinnerEligible = endHour >= 19 && durationHours >= 8;
+        const breakfastEligible = !isFirstLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
+        const lunchEligible = !isFirstLastDay ? startHour <= 7 && endHour >= 13 && durationHours >= 8 : startHour <= 7 && endHour >= 13 && durationHours > 0 ;
+        const dinnerEligible = !isFirstLastDay ? endHour >= 19 && durationHours >= 8 : endHour >= 19 && durationHours > 0;
         
 
         let mealtimeStatus = [];
@@ -615,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         
-        const eligibility = durationHours >= 8 && isApproved && isOutside && isNotClaimed && mealCount > 0 && mealtimeStatus !== "✗ None" ? true : false;
+        const eligibility = isApproved && isOutside && isNotClaimed && mealCount > 0 && mealtimeStatus !== "✗ None" ? true : false;
 
         // Update results
         const criteria = document.querySelectorAll('.criteria-status');
@@ -626,21 +646,24 @@ document.addEventListener('DOMContentLoaded', function() {
         criteria[1].className = isOutside ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
         criteria[2].textContent = durationStatus;
-        criteria[2].className = durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[2].className = isFirstLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
-        criteria[3].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
-        criteria[3].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+        criteria[3].textContent = firstLastDay;
+        criteria[3].className = 'criteria-status eligible';
 
-        criteria[4].textContent = mealProvisionStatus;
-        criteria[4].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+        criteria[4].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
+        criteria[4].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
 
-        criteria[5].textContent = NotClaimed;
-        criteria[5].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[5].textContent = mealProvisionStatus;
+        criteria[5].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
 
-        criteria[6].innerHTML = eligibility 
+        criteria[6].textContent = NotClaimed;
+        criteria[6].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[7].innerHTML = eligibility 
             ? "<h2>✓ Eligible</h2>" 
             : "<h2>✗ Not Eligible</h2>";
-        criteria[6].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[7].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
     }
     
     // Trigger initial calculation
