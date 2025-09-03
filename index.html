@@ -16,6 +16,14 @@
         h3 {
             margin-bottom: 20px;
         }
+
+        details {
+            padding: 10px;
+        }
+
+        summary {
+            padding-bottom: 30px;
+        }
         
         body {
             background: linear-gradient(135deg, #f0f5fc 0%, #e2e9f4 100%);
@@ -71,6 +79,17 @@
         .logo-icon {
             font-size: 2.8rem;
             color: white;
+        }
+
+        .toggleFormat {
+            width: 80px;
+            height: 40px;
+            font-size: 1rem;
+            padding: 20px;
+        }
+
+        .toggleFormatText {
+            font-size: 0.7rem;
         }
         
         .header-text h1 {
@@ -434,24 +453,26 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-plane-departure"></i> Travel Start and End Time</label>
-                    <div class="time-select" >
-                        <p>From</p>
-                        <input type="time" id="startTime">
-                        <p>To</p>
-                        <input type="time" id="endTime">
-                    </div>
+                  <label><i class="fas fa-plane-departure"></i> Travel Start and End Time</label>
+                  <div class="time-select">
+                    <p>From</p>
+                    <input type="time" id="startTime">
+                    <span id="startDisplay"></span>
+                    <p>To</p>
+                    <input type="time" id="endTime">
+                    <span id="endDisplay"></span>
+                  </div>
                 </div>
 
                 <div class="form-group">
                     <label><i class="fas fa-calendar"></i> Is this day the start or end of your trip?</label>
                     
                     <label for="first-last-yes">
-                        <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day"> Yes
+                        <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day" checked> Yes
                     </label>
                     
                     <label for="first-last-no">
-                        <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between" checked> No
+                        <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between"> No
                     </label>
                 </div>
                 
@@ -492,49 +513,59 @@
             </div>
             
             <div class="results-section">
-                <h2 class="section-title"><i class="fas fa-info-circle"></i> Results</h2>
-                
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Summary</h2>
+
                 <div class="results-container">
                     <div class="eligibility-criteria">
-                        <h3>Eligibility Criterias</h3>
-
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fa fa-check-circle"></i> LM Approval</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fas fa-map-marker"></i> Destination</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fas fa-clock"></i> Duration</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fas fa-calendar"></i> First/Last day of trip</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fas fa-utensils"></i> Eligible Meals</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fas fa-hotel"></i> Third-Party Meal Provisions</div>
-                            <div class="criteria-status">-</div>
-                        </div>
-                        <div class="criteria-item">
-                            <div class="criteria-label"><i class="fa fa-hourglass-3"></i> Claim Status</div>
-                            <div class="criteria-status">-</div>
-                        </div>
                         <div class="criteria-item">
                             <div class="criteria-label"><h2>Result:<h2></div>
                             <div class="criteria-status">-</div>
                         </div>
+
+                        <div class="summary">-</div>
                     </div>
+
+                    <div class="results-container">
+                      <details>
+                            <summary>Eligibility Criterias</summary>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fa fa-check-circle"></i> LM Approval</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fas fa-map-marker"></i> Destination</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fas fa-clock"></i> Duration</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fas fa-calendar"></i> First/Last day of trip</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fas fa-utensils"></i> Eligible Meals</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fas fa-hotel"></i> Third-Party Meal Provisions</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+
+                        <div class="criteria-item">
+                          <div class="criteria-label"><i class="fa fa-hourglass-3"></i> Claim Status</div>
+                          <div class="criteria-status">-</div>
+                        </div>
+                      </details>
+                    </div>
+
                 </div>
                 
                 <div class="policy-summary">
@@ -639,31 +670,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update results
         const criteria = document.querySelectorAll('.criteria-status');
-        criteria[0].textContent = Approved;
-        criteria[0].className = isApproved ? 'criteria-status eligible' : 'criteria-status not-eligible';
-
-        criteria[1].textContent = Outside;
-        criteria[1].className = isOutside ? 'criteria-status eligible' : 'criteria-status not-eligible';
-
-        criteria[2].textContent = durationStatus;
-        criteria[2].className = isFirstLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
-
-        criteria[3].textContent = firstLastDay;
-        criteria[3].className = 'criteria-status eligible';
-
-        criteria[4].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
-        criteria[4].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
-
-        criteria[5].textContent = mealProvisionStatus;
-        criteria[5].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
-
-        criteria[6].textContent = NotClaimed;
-        criteria[6].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
-
-        criteria[7].innerHTML = eligibility 
+        criteria[0].innerHTML = eligibility 
             ? "<h2>✓ Eligible</h2>" 
             : "<h2>✗ Not Eligible</h2>";
-        criteria[7].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[0].className = eligibility ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[1].textContent = Approved;
+        criteria[1].className = isApproved ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[2].textContent = Outside;
+        criteria[2].className = isOutside ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[3].textContent = durationStatus;
+        criteria[3].className = isFirstLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        criteria[4].textContent = firstLastDay;
+        criteria[4].className = 'criteria-status eligible';
+
+        criteria[5].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
+        criteria[5].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+
+        criteria[6].textContent = mealProvisionStatus;
+        criteria[6].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+
+        criteria[7].textContent = NotClaimed;
+        criteria[7].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
+
+        const summary = document.querySelector('.summary');
+
+        summary.textContent = eligibility ? `You are eligible for ${mealtimeStatus} for this day of the trip. You may use your Line Manager's corporate credit card, or use your personal funds and report this expense through Concur for reimbursement.` : `Sorry, you are not eligible for any meal allowance for this day of the trip. Click "Eligibility Criterias below or contact HR for more information.`
     }
     
     // Trigger initial calculation
