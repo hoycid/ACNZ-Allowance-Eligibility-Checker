@@ -117,6 +117,10 @@
             width: 10px;
         }
         
+        .first-last-group {
+            display: none;
+        }
+
         .input-section {
             flex: 1;
             min-width: 400px;
@@ -465,15 +469,27 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fas fa-calendar"></i> Is this day the start or end of your trip?</label>
-                    
-                    <label for="first-last-yes">
-                        <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day" checked> Yes
-                    </label>
-                    
-                    <label for="first-last-no">
-                        <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between"> No
-                    </label>
+                  <label><i class="fas fa-car-side"></i> Is this a one day trip?</label>
+
+                  <label for="one-day-yes">
+                    <input class="radio" type="radio" name="one-day" id="one-day-yes" value="One day" checked> Yes
+                  </label>
+
+                  <label for="one-day-no">
+                    <input class="radio" type="radio" name="one-day" id="one-day-no" value="One or more days"> No
+                  </label>
+                </div>
+
+                <div class="form-group" id="first-last-group">
+                  <label><i class="fas fa-calendar"></i> Is this day the start or end of your trip?</label>
+
+                  <label for="first-last-yes">
+                    <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day"> Yes
+                  </label>
+
+                  <label for="first-last-no">
+                    <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between" checked> No
+                  </label>
                 </div>
                 
                 <div class="form-group">
@@ -569,12 +585,12 @@
                 </div>
                 
                 <div class="policy-summary">
-                    <div class="policy-title"><i class="fas fa-info-circle"></i> Policy Summary</div>
+                    <div class="policy-title"><i class="fas fa-info-circle"></i> Note</div>
                     <ul class="policy-points">
                         <li>Breakfast eligible if traveling at or before 7:00 AM</li>
+                        <li>Lunch eligible if traveling before 2:00 PM</li>
                         <li>Dinner eligible if traveling at or after 7:00 PM</li>
                         <li>Deduct for meals provided by hotels, airlines or events</li>
-                        <li>Allowances granted per 8-hour block of travel/stay</li>
                     </ul>
                 </div>
             </div>
@@ -582,10 +598,10 @@
     </div>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const calculateBtn = document.getElementById('calculateBtn');
     const mealOptions = document.querySelectorAll('.meal-option');
-    
+
     // Set default times
     document.getElementById('startTime').value = "06:00"; // 6 AM
     document.getElementById('endTime').value = "18:00";   // 6 PM
@@ -621,6 +637,26 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const durationHours = endHour - startHour;
 
+        const oneDayYes = document.getElementById('one-day-yes');
+        const oneDayNo = document.getElementById('one-day-no');
+        const firstLastGroup = document.getElementById('first-last-group');
+
+          function toggleFirstLastGroup() {
+            if (oneDayNo.checked) {
+              firstLastGroup.style.display = 'block';
+            } else {
+              firstLastGroup.style.display = 'none';
+              document.getElementById('first-last-yes').checked = false;
+              document.getElementById('first-last-no').checked = true;
+            }
+          }
+
+        // Run once on page load
+        toggleFirstLastGroup();
+
+        // Add listeners
+        oneDayYes.addEventListener('change', toggleFirstLastGroup);
+        oneDayNo.addEventListener('change', toggleFirstLastGroup);
 
         //Get answers
         const isApproved = document.getElementById('approval-yes').checked;
@@ -648,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Meal eligibility
         const breakfastEligible = !isFirstLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
-        const lunchEligible = !isFirstLastDay ? startHour <= 14  && durationHours >= 8 : startHour <= 14 && durationHours > 0 ;
+        const lunchEligible = !isFirstLastDay ? startHour <= 14 && durationHours >= 8 : startHour <= 14 && durationHours > 0 ;
         const dinnerEligible = !isFirstLastDay ? endHour >= 19 && durationHours >= 8 : endHour >= 19 && durationHours > 0;
         
 
