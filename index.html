@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (durationHours < 8) mealCount = 1;
         else if (durationHours <= 16 && startHour >= 7 && endHour <= 13) mealCount = 2;
         else mealCount = 3;
-        const durationStatus = mealCount > 0 ? `✓ ${mealCount} meal(s) (${durationHours.toFixed(1)} hours)` : `✗ ${mealCount} meal (${durationHours.toFixed(1)} hours)`;
+        const durationStatus = mealCount > 0 ? `✓ ${durationHours.toFixed(1)} hours` : `✗ ${durationHours.toFixed(1)} hours`;
         
         // Meal eligibility
         const breakfastEligible = !isFirstLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
