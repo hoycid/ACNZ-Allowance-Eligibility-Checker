@@ -648,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Meal eligibility
         const breakfastEligible = !isFirstLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
-        const lunchEligible = !isFirstLastDay ? startHour <= 7 && endHour >= 13 && durationHours >= 8 : startHour <= 7 && endHour >= 13 && durationHours > 0 ;
+        const lunchEligible = !isFirstLastDay ? startHour <= 14  && durationHours >= 8 : startHour <= 14 && durationHours > 0 ;
         const dinnerEligible = !isFirstLastDay ? endHour >= 19 && durationHours >= 8 : endHour >= 19 && durationHours > 0;
         
 
