@@ -476,7 +476,7 @@
                   </label>
 
                   <label for="first-last-no">
-                    <input class="radio" type="radio" name="first-last" id="first-last-no" value="Between" checked> No
+                    <input class="radio" type="radio" name="first-last" id="first-last-no" value="No" checked> No
                   </label>
                 </div>
 
@@ -557,11 +557,6 @@
 
                         <div class="criteria-item">
                           <div class="criteria-label"><i class="fas fa-clock"></i> Duration</div>
-                          <div class="criteria-status">-</div>
-                        </div>
-
-                        <div class="criteria-item">
-                          <div class="criteria-label"><i class="fas fa-calendar"></i> First/Last day of trip</div>
                           <div class="criteria-status">-</div>
                         </div>
 
@@ -720,17 +715,14 @@
         criteria[3].textContent = durationStatus;
         criteria[3].className = isFirstLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
-        criteria[4].textContent = firstLastDay;
-        criteria[4].className = 'criteria-status eligible';
+        criteria[4].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
+        criteria[4].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
 
-        criteria[5].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
-        criteria[5].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
+        criteria[5].textContent = mealProvisionStatus;
+        criteria[5].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
 
-        criteria[6].textContent = mealProvisionStatus;
-        criteria[6].className = mealProvisionStatus === "✓ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
-
-        criteria[7].textContent = NotClaimed;
-        criteria[7].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[6].textContent = NotClaimed;
+        criteria[6].className = isNotClaimed ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
         const summary = document.querySelector('.summary');
 
