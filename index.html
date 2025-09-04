@@ -117,7 +117,7 @@
             width: 10px;
         }
         
-        .first-last-group {
+        .trip-part-group {
             display: none;
         }
 
@@ -468,27 +468,35 @@
                   </label>
                 </div>
 
-                <div class="form-group" id="first-last-group">
-                  <label><i class="fas fa-calendar"></i> Is this day the start or end of your trip?</label>
+                <div class="form-group" id="trip-part-group">
+                  <label><i class="fas fa-calendar"></i>Which part of your trip is this day?</label>
 
-                  <label for="first-last-yes">
-                    <input class="radio" type="radio" name="first-last" id="first-last-yes" value="First/Last Day"> Yes
+                  <label for="trip-part-first">
+                    <input class="radio" type="radio" name="trip-part" id="trip-part-first" value="First day" checked> First day
                   </label>
 
-                  <label for="first-last-no">
-                    <input class="radio" type="radio" name="first-last" id="first-last-no" value="No" checked> No
+                  <label for="trip-part-last">
+                    <input class="radio" type="radio" name="trip-part" id="trip-part-last" value="Last day"> Last day
+                  </label>
+
+                <label for="trip-part-between">
+                    <input class="radio" type="radio" name="trip-part" id="trip-part-between" value="In between"> In between
                   </label>
                 </div>
 
                 <div class="form-group">
-                  <label><i class="fas fa-plane-departure"></i> Travel Start and End Time</label>
+                  <label><i class="fas fa-plane-departure"></i> Travel Timing</label>
                   <div class="time-select">
-                    <p>From</p>
-                    <input type="time" id="startTime">
-                    <span id="startDisplay"></span>
-                    <p>To</p>
-                    <input type="time" id="endTime">
-                    <span id="endDisplay"></span>
+                    <div id="startTimePart">
+                        <p>From</p>
+                        <input type="time" id="startTime">
+                        <span id="startDisplay"></span>
+                    </div>
+                    <div id="endTimePart">
+                        <p>To</p>
+                        <input type="time" id="endTime">
+                        <span id="endDisplay"></span>
+                    </div>
                   </div>
                 </div>
                 
@@ -579,15 +587,33 @@
 
                 </div>
                 
-                <div class="policy-summary">
-                    <div class="policy-title"><i class="fas fa-info-circle"></i> Note</div>
-                    <ul class="policy-points">
-                        <li>Breakfast eligible if traveling at or before 7:00 AM</li>
-                        <li>Lunch eligible if traveling before 2:00 PM</li>
-                        <li>Dinner eligible if traveling at or after 7:00 PM</li>
-                        <li>Deduct for meals provided by hotels, airlines or events</li>
-                    </ul>
-                </div>
+            <div class="policy-summary">
+              <div class="policy-title"><i class="fas fa-info-circle"></i> FAQ</div>
+              <div class="policy-points">
+                <details>
+                  <summary>Can we claim lunch on a day trip?</summary>
+                  <h4>Yes, you can claim lunch on a day trip if your total travel meets the policy’s minimum hours for meal allowances.</h4>
+                </details>
+
+                <details>
+                  <summary>What if my meal is provided by the hotel, line manager, or an event?</summary>
+                  <h4>Any meals provided as part of your trip or event must be deducted from your claim, even if your travel qualifies for an allowance.</h4>
+                </details>
+
+                <details>
+                  <summary>Most of my travel is day trips that I plan myself without needing approval. Should I put Yes or No in the first question?</summary>
+                  <h4>You should select Yes. Even for day trips you plan yourself, any expenses you claim still require your manager’s approval at the end of the day.</h4>
+                </details>
+
+                <details>
+                  <summary>What is our work location? Is it the town we live in or the region we cover?</summary>
+                  <h4>Use your office or base location, not your home address, even if you cover a wider area.</h4>
+                </details>
+
+
+              </div>
+            </div>
+
             </div>
         </div>
     </div>
@@ -598,8 +624,51 @@
     const mealOptions = document.querySelectorAll('.meal-option');
 
     // Set default times
-    document.getElementById('startTime').value = "06:00"; // 6 AM
-    document.getElementById('endTime').value = "18:00";   // 6 PM
+    document.getElementById('startTime').value = "09:00"; // 9 AM
+    document.getElementById('endTime').value = "17:00";   // 5 PM
+
+    const oneDayYes = document.getElementById('one-day-yes');
+    const oneDayNo = document.getElementById('one-day-no');
+    const tripPartGroup = document.getElementById('trip-part-group');
+
+    const firstDay = document.getElementById('trip-part-first');
+    const lastDay = document.getElementById('trip-part-last');
+    const betweenDay = document.getElementById('trip-part-between');
+
+    const startTimePart = document.getElementById('startTimePart');
+    const endTimePart = document.getElementById('endTimePart');
+
+    function toggleTimeInputs() {
+      if (firstDay.checked) {
+        startTimePart.style.display = 'block';
+        endTimePart.style.display = 'none';
+
+        document.getElementById('startTime').value = "09:00";
+        document.getElementById('endTime').value = "23:59";
+      } else if (lastDay.checked) {
+        startTimePart.style.display = 'none';
+        endTimePart.style.display = 'block';
+
+        document.getElementById('startTime').value = "00:00";
+        document.getElementById('endTime').value = "17:00";
+      } else if (betweenDay.checked) { // In between
+        startTimePart.style.display = 'block';
+        endTimePart.style.display = 'block';
+
+        document.getElementById('startTime').value = "00:00";
+        document.getElementById('endTime').value = "23:59";
+      }
+    }
+
+
+    // Add change listeners
+    firstDay.addEventListener('change', toggleTimeInputs);
+    lastDay.addEventListener('change', toggleTimeInputs);
+    betweenDay.addEventListener('change', toggleTimeInputs);
+
+    // Run once on page load
+    toggleTimeInputs();
+
     
     // Meal selection
     mealOptions.forEach(option => {
@@ -632,37 +701,52 @@
         
         const durationHours = endHour - startHour;
 
-        const oneDayYes = document.getElementById('one-day-yes');
-        const oneDayNo = document.getElementById('one-day-no');
-        const firstLastGroup = document.getElementById('first-last-group');
-
-          function toggleFirstLastGroup() {
+          function toggleTripPartGroup() {
             if (oneDayNo.checked) {
-              firstLastGroup.style.display = 'block';
-            } else {
-              firstLastGroup.style.display = 'none';
-              document.getElementById('first-last-yes').checked = false;
-              document.getElementById('first-last-no').checked = true;
+              tripPartGroup.style.display = 'block';
+              document.getElementById('trip-part-first').checked = true;
+              document.getElementById('trip-part-last').checked = false;
+              document.getElementById('trip-part-between').checked = false;
+
+                startTimePart.style.display = 'block';
+                endTimePart.style.display = 'none';
+
+                document.getElementById('startTime').value = "09:00";
+                document.getElementById('endTime').value = "23:59";
+            }
+            if (oneDayYes.checked) {
+              tripPartGroup.style.display = 'none';
+              document.getElementById('trip-part-first').checked = false;
+              document.getElementById('trip-part-last').checked = false;
+              document.getElementById('trip-part-between').checked = true;
+
+                startTimePart.style.display = 'block';
+                endTimePart.style.display = 'block';
+
+                document.getElementById('startTime').value = "09:00";
+                document.getElementById('endTime').value = "17:00";
             }
           }
 
         // Run once on page load
-        toggleFirstLastGroup();
+        toggleTripPartGroup();
 
         // Add listeners
-        oneDayYes.addEventListener('change', toggleFirstLastGroup);
-        oneDayNo.addEventListener('change', toggleFirstLastGroup);
+        oneDayYes.addEventListener('change', toggleTripPartGroup);
+        oneDayNo.addEventListener('change', toggleTripPartGroup);
 
         //Get answers
         const isApproved = document.getElementById('approval-yes').checked;
         const isOutside = document.getElementById('outside-yes').checked;
         const isNotClaimed = document.getElementById('claim-no').checked;
-        const isFirstLastDay = document.getElementById('first-last-yes').checked;
+        const isFirstDay = document.getElementById('trip-part-first').checked;
+        const isLastDay = document.getElementById('trip-part-last').checked;
 
         const Approved = document.getElementById('approval-yes').checked ? document.getElementById('approval-yes').value : document.getElementById('approval-no').value;
         const Outside = document.getElementById('outside-yes').checked ? document.getElementById('outside-yes').value : document.getElementById('outside-no').value;
         const NotClaimed = document.getElementById('claim-yes').checked ? document.getElementById('claim-no').value : document.getElementById('claim-yes').value;
-        const firstLastDay = document.getElementById('first-last-yes').checked ? document.getElementById('first-last-yes').value : document.getElementById('first-last-no').value;
+        const firstDay = document.getElementById('trip-part-first').checked ? document.getElementById('trip-part-first').value : document.getElementById('trip-part-first').value;
+        const lastDay = document.getElementById('trip-part-last').checked ? document.getElementById('trip-part-last').value : document.getElementById('trip-part-last').value;
         
         // Get selected meals
         const breakfastProvided = document.getElementById('breakfastProvided').checked;
@@ -678,9 +762,9 @@
         const durationStatus = mealCount > 0 ? `✓ ${durationHours.toFixed(1)} hours` : `✗ ${durationHours.toFixed(1)} hours`;
         
         // Meal eligibility
-        const breakfastEligible = !isFirstLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
-        const lunchEligible = !isFirstLastDay ? startHour <= 14 && durationHours >= 8 : startHour <= 14 && durationHours > 0 ;
-        const dinnerEligible = !isFirstLastDay ? endHour >= 19 && durationHours >= 8 : endHour >= 19 && durationHours > 0;
+        const breakfastEligible = !isFirstDay && !isLastDay ? startHour <= 7 && durationHours >= 8 : startHour <= 7 && durationHours > 0;
+        const lunchEligible = !isFirstDay && !isLastDay ? startHour <= 14 && durationHours >= 8 : startHour <= 14 && durationHours > 0 ;
+        const dinnerEligible = !isFirstDay && !isLastDay ? endHour >= 19 && durationHours >= 8 : endHour >= 19 && durationHours > 0;
         
 
         let mealtimeStatus = [];
@@ -713,7 +797,7 @@
         criteria[2].className = isOutside ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
         criteria[3].textContent = durationStatus;
-        criteria[3].className = isFirstLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
+        criteria[3].className = isFirstDay || isLastDay && durationHours > 0 ? 'criteria-status eligible' : durationHours >= 8 ? 'criteria-status eligible' : 'criteria-status not-eligible';
 
         criteria[4].textContent = mealtimeStatus.length > 0 ? `${mealtimeStatus}` : `${mealtimeStatus}`;
         criteria[4].className = mealtimeStatus !== "✗ None" ? 'criteria-status eligible': 'criteria-status not-eligible';
