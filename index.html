@@ -152,6 +152,17 @@
         .section-title i {
             font-size: 1.4rem;
         }
+
+        .note-message {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .travel-type-group {
+            display: inline-flex;
+            gap: 15px;
+        }
         
         .form-group {
             margin-bottom: 25px;
@@ -172,9 +183,20 @@
             align-items: center;
             gap: 8px;
         }
+
+        .form-subgroup {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
         
         .form-group label i {
             color: #054E5A;
+        }
+
+        .form-subgroup section{
+            display: inline-flex;
+            gap: 15px;
+            margin-top: 10px;
         }
         
         select, input {
@@ -479,7 +501,7 @@
                     <input class="radio" type="radio" name="trip-part" id="trip-part-last" value="Last day"> Last day
                   </label>
 
-                <label for="trip-part-between">
+                  <label for="trip-part-between">
                     <input class="radio" type="radio" name="trip-part" id="trip-part-between" value="In between"> In between
                   </label>
                 </div>
@@ -497,7 +519,32 @@
                         <input type="time" id="endTime">
                         <span id="endDisplay"></span>
                     </div>
+                    <div class='form-subgroup'>
+                        <p>Does this fall within your usual working hours?</p>
+                        <section>
+                            <label for="travel-day-working">
+                            <input class="radio" type="radio" name="travel-day" id="travel-day-working" value="Working hours" checked> Yes
+                            </label>
+                            <label for="travel-day-non-working">
+                                <input class="radio" type="radio" name="travel-day" id="travel-day-non-working" value="Weekend/Non-working hours"> No
+                            </label>
+                        </section>
+                    </div>
                   </div>
+                  <div class="note-message">
+                    <p id="trip-part-message">Start and end times automatically set to start and end of day.</p>
+                  </div>
+                </div>
+
+                <div class="form-group" id='travel-type-group'>
+                  <label><i class="fas fa-plane"></i>Travel Type</label>
+
+                    <label for="travel-type-domestic">
+                        <input class="radio" type="radio" name="travel-type" id="travel-type-domestic" value="Domestic" checked> Domestic
+                    </label>
+                    <label for="travel-type-international">
+                            <input class="radio" type="radio" name="travel-type" id="travel-type-international" value="International"> International
+                    </label>
                 </div>
                 
                 <div class="form-group">
@@ -631,6 +678,14 @@
     const oneDayNo = document.getElementById('one-day-no');
     const tripPartGroup = document.getElementById('trip-part-group');
 
+    const travelDayWorking = document.getElementById('travel-day-working')
+    const travelDayNonWorking = document.getElementById('travel-day-non-working');
+
+    const domesticTravel = document.getElementById('travel-type-domestic');
+    const internationalTravel = document.getElementById('travel-type-international')
+    const travelTypeMessage = document.getElementById('travel-type-message')
+
+
     const firstDay = document.getElementById('trip-part-first');
     const lastDay = document.getElementById('trip-part-last');
     const betweenDay = document.getElementById('trip-part-between');
@@ -638,26 +693,97 @@
     const startTimePart = document.getElementById('startTimePart');
     const endTimePart = document.getElementById('endTimePart');
 
+    let startTimeStore;
+
+            function toggleTripPartGroup() {
+            if (oneDayNo.checked) {
+              tripPartGroup.style.display = 'block';
+              document.getElementById('trip-part-first').checked = true;
+              document.getElementById('trip-part-last').checked = false;
+              document.getElementById('trip-part-between').checked = false;
+
+                startTimePart.style.display = 'block';
+                endTimePart.style.display = 'none';
+                toggleTimeInputs();
+
+                document.getElementById('startTime').value = "09:00";
+                document.getElementById('endTime').value = "23:59";
+            }
+            if (oneDayYes.checked) {
+              tripPartGroup.style.display = 'none';
+              document.getElementById('trip-part-first').checked = false;
+              document.getElementById('trip-part-last').checked = false;
+              document.getElementById('trip-part-between').checked = true;
+
+                startTimePart.style.display = 'block';
+                endTimePart.style.display = 'block';
+                document.getElementById('trip-part-message').textContent = ""
+
+                document.getElementById('startTime').value = "09:00";
+                document.getElementById('endTime').value = "17:00";
+            }
+          }
+
+    function subtractNHours(timeString, number) {
+      let [hours, minutes] = timeString.split(':').map(Number);
+
+      // Convert to total minutes, subtract N hours
+      let totalMinutes = hours * 60 + minutes - (number * 60);
+
+      // Handle wrap-around (e.g. going before midnight)
+      if (totalMinutes < 0) totalMinutes += 24 * 60;
+
+      // Convert back to HH:MM
+      let newHours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+      let newMinutes = (totalMinutes % 60).toString().padStart(2, '0');
+
+      return `${newHours}:${newMinutes}`;
+    }
+
+    function deductPrepTime() {
+        if (domesticTravel.checked && travelDayNonWorking.checked) {
+            document.getElementById('startTime').value = subtractNHours(startTimeStore, 1)
+            document.getElementById('trip-part-message').textContent = '- Start time automatically adjusted to account for travel preparations. (- 1 hour)';
+        } else if (internationalTravel.checked && travelDayNonWorking.checked) {
+            document.getElementById('startTime').value = subtractNHours(startTimeStore, 2)
+            document.getElementById('trip-part-message').textContent = '- Start time automatically adjusted to account for travel preparations. (- 2 hours)';
+        } else {
+            document.getElementById('startTime').value = startTimeStore
+            document.getElementById('trip-part-message').textContent = ''
+            document.getElementById('travel-type-group').display = 'none'
+        }
+    }
+
     function toggleTimeInputs() {
       if (firstDay.checked) {
         startTimePart.style.display = 'block';
         endTimePart.style.display = 'none';
+        document.getElementById('trip-part-message').textContent = "End time automatically set to end of day."
 
         document.getElementById('startTime').value = "09:00";
         document.getElementById('endTime').value = "23:59";
-      } else if (lastDay.checked) {
+      }
+      if (lastDay.checked) {
         startTimePart.style.display = 'none';
         endTimePart.style.display = 'block';
+        document.getElementById('trip-part-message').textContent = "Start time automatically set to start of day."
 
         document.getElementById('startTime').value = "00:00";
         document.getElementById('endTime').value = "17:00";
-      } else if (betweenDay.checked) { // In between
+      }
+      if (betweenDay.checked) { // In between
         startTimePart.style.display = 'block';
         endTimePart.style.display = 'block';
+        document.getElementById('trip-part-message').textContent = "Start and end times automatically set to start and end of day."
 
         document.getElementById('startTime').value = "00:00";
         document.getElementById('endTime').value = "23:59";
       }
+      storeStartTime();
+    }
+
+    function storeStartTime() {
+        startTimeStore = document.getElementById('startTime').value;
     }
 
 
@@ -665,9 +791,19 @@
     firstDay.addEventListener('change', toggleTimeInputs);
     lastDay.addEventListener('change', toggleTimeInputs);
     betweenDay.addEventListener('change', toggleTimeInputs);
+    domesticTravel.addEventListener('change', deductPrepTime);
+    internationalTravel.addEventListener('change', deductPrepTime);
+    document.getElementById('startTime').addEventListener('change', storeStartTime);
+
+    oneDayYes.addEventListener('change', toggleTripPartGroup);
+    oneDayNo.addEventListener('change', toggleTripPartGroup);
+
+    travelDayWorking.addEventListener('change', deductPrepTime)
+    travelDayNonWorking.addEventListener('change', deductPrepTime)
 
     // Run once on page load
     toggleTimeInputs();
+    //deductPrepTime();
 
     
     // Meal selection
@@ -700,40 +836,6 @@
         }
         
         const durationHours = endHour - startHour;
-
-          function toggleTripPartGroup() {
-            if (oneDayNo.checked) {
-              tripPartGroup.style.display = 'block';
-              document.getElementById('trip-part-first').checked = true;
-              document.getElementById('trip-part-last').checked = false;
-              document.getElementById('trip-part-between').checked = false;
-
-                startTimePart.style.display = 'block';
-                endTimePart.style.display = 'none';
-
-                document.getElementById('startTime').value = "09:00";
-                document.getElementById('endTime').value = "23:59";
-            }
-            if (oneDayYes.checked) {
-              tripPartGroup.style.display = 'none';
-              document.getElementById('trip-part-first').checked = false;
-              document.getElementById('trip-part-last').checked = false;
-              document.getElementById('trip-part-between').checked = true;
-
-                startTimePart.style.display = 'block';
-                endTimePart.style.display = 'block';
-
-                document.getElementById('startTime').value = "09:00";
-                document.getElementById('endTime').value = "17:00";
-            }
-          }
-
-        // Run once on page load
-        toggleTripPartGroup();
-
-        // Add listeners
-        oneDayYes.addEventListener('change', toggleTripPartGroup);
-        oneDayNo.addEventListener('change', toggleTripPartGroup);
 
         //Get answers
         const isApproved = document.getElementById('approval-yes').checked;
@@ -814,7 +916,8 @@
     }
     
     // Trigger initial calculation
-    checkEligibility();
+    toggleTripPartGroup();
+    //checkEligibility();
 });
 </script>
 
