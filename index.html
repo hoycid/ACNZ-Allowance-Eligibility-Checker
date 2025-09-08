@@ -160,7 +160,7 @@
         }
 
         .travel-type-group {
-            display: inline-flex;
+            display: none;
             gap: 15px;
         }
         
@@ -530,23 +530,25 @@
                             </label>
                         </section>
                     </div>
+
+                    <div class='form-subgroup' id='travel-type-group'>
+                        <p>Specify travel type?</p>
+                        <section>
+                            <label for="travel-type-domestic">
+                                <input class="radio" type="radio" name="travel-type" id="travel-type-domestic" value="Domestic" checked> Domestic
+                            </label>
+                            <label for="travel-type-international">
+                                    <input class="radio" type="radio" name="travel-type" id="travel-type-international" value="International"> International
+                            </label>
+                        </section>
+                    </div>
+
                   </div>
                   <div class="note-message">
                     <p id="trip-part-message">Start and end times automatically set to start and end of day.</p>
                   </div>
                 </div>
 
-                <div class="form-group" id='travel-type-group'>
-                  <label><i class="fas fa-plane"></i>Travel Type</label>
-
-                    <label for="travel-type-domestic">
-                        <input class="radio" type="radio" name="travel-type" id="travel-type-domestic" value="Domestic" checked> Domestic
-                    </label>
-                    <label for="travel-type-international">
-                            <input class="radio" type="radio" name="travel-type" id="travel-type-international" value="International"> International
-                    </label>
-                </div>
-                
                 <div class="form-group">
                     <label><i class="fas fa-utensil-spoon"></i> Meals Provided by Third Parties</label>
                     <div class="meals-group">
@@ -744,9 +746,11 @@
         if (domesticTravel.checked && travelDayNonWorking.checked) {
             document.getElementById('startTime').value = subtractNHours(startTimeStore, 1)
             document.getElementById('trip-part-message').textContent = '- Start time automatically adjusted to account for travel preparations. (- 1 hour)';
+            document.getElementById('travel-type-group').style.display = 'block'
         } else if (internationalTravel.checked && travelDayNonWorking.checked) {
             document.getElementById('startTime').value = subtractNHours(startTimeStore, 2)
             document.getElementById('trip-part-message').textContent = '- Start time automatically adjusted to account for travel preparations. (- 2 hours)';
+            document.getElementById('travel-type-group').style.display = 'block'
         } else {
             document.getElementById('startTime').value = startTimeStore
             document.getElementById('trip-part-message').textContent = ''
@@ -803,7 +807,7 @@
 
     // Run once on page load
     toggleTimeInputs();
-    //deductPrepTime();
+    deductPrepTime();
 
     
     // Meal selection
