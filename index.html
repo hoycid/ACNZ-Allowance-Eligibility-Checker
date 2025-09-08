@@ -726,6 +726,13 @@
             }
           }
 
+    function scrollToTop() {
+        window.scrollTo({
+          top: 0,           // Scroll to top
+          behavior: "smooth" // Smooth scrolling animation
+        });
+    }
+
     function subtractNHours(timeString, number) {
       let [hours, minutes] = timeString.split(':').map(Number);
 
@@ -820,7 +827,10 @@
     });
     
     // Calculate button click
-    calculateBtn.addEventListener('click', checkEligibility);
+    calculateBtn.addEventListener('click', () => {
+        checkEligibility();
+        scrollToTop(); 
+    })
     
     function parseTime(timeStr) {
         const [hours, minutes] = timeStr.split(":").map(Number);
